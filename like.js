@@ -42,19 +42,20 @@ function main() {
     })
         .then((res) => res.json())
         .then(res => {
-            res.feedList.forEach(item => {
+            res.feedList.forEach(async item => {
                 const runFlag = Math.random() * 2.5 < 1 // 点赞40%的内容
                 if (!runFlag) return;
-                fetch("https://tuchong.com/gapi/interactive/favorite", {
-                    headers,
-                    body: `post_id=${item.post_id}&nonce=${process.env.TUCHONG_NONCE}&referer=&position=community`,
-                    method: "PUT",
-                })
-                    .then((res) => res.json())
-                    .then(console.log)
-                    .catch(err => {
-                        logToFeiShu('出错了' + err)
-                    })
+                try {
+                    const response = await fetch("https://tuchong.com/gapi/interactive/favorite", {
+                        headers,
+                        body: `post_id=${item.post_id}&nonce=${process.env.TUCHONG_NONCE}&referer=&position=community`,
+                        method: "PUT",
+                    });
+                    const jsonResult = await response.json();
+                    console.log(jsonResult);
+                } catch(err) {
+                    logToFeiShu('出错了' + err)
+                }
             })
         })
         .catch(err => {
