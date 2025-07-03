@@ -1,0 +1,15 @@
+{
+  "name": "likerobot",
+  "version": "1.0.0",
+  "main": "like.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.1",
+    "dotenv": "^17.0.1"
+  }
+}

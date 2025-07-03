@@ -15,6 +15,30 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9  # 指定 pnpm 版本（根据你的项目需求调整）
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+            echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+            node-version: '18'
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+            path: |
+              node_modules
+              ${{ env.STORE_PATH }}  # pnpm 的全局存储目录
+            key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+            restore-keys: |
+              ${{ runner.os }}-pnpm-store-
+  
+      - name: Install dependencies
+        run: pnpm install  # 使用 pnpm 安装依赖
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
@@ -22,4 +46,5 @@ jobs:
       - name: Run likeRobot script
         env:
           TUCHONG_COOKIES: ${{ secrets.TUCHONG_COOKIES }}
+          REMOTE_URL: ${{ secrets.DATABASE_URL }}
         run: node like.js
