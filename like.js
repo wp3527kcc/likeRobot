@@ -1,3 +1,4 @@
+process.env.TUCHONG_COOKIE = 'ttcid=db24e96363f4490e827feee9f66ab61913; log_web_id=6297149696; tt_scid=njQ1fbQAJS24N6wB4d3Z2KGBvHD0fJNJzrd9-pFeRA7r9OZHhPUJeQbXVuo7H7uqf8c9; creative_device_id=fbb8a24c-9f31-48e7-8c2a-95c24d21f198; creative_token=eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDkxMTIyOTAsInZhbCI6IjRTVkkyUUtIRjJaTzdQNkNUTEIyMkFITEMzN1NHWEY1UEFFVlJaNzVYNDQ1REFDM1lNU0EifQ.tGU3OTjCEcViB18MEKvUOXDRY2zViBTsYOrWMw3vdorK-j51pGDuhwP8GPwqGgsh; PHPSESSID=3limlcia49ups58lujiq7ja3eq; webp_enabled=1; lang=zh; email=719045449%40qq.com; token=783a4b938dc88561'
 const headers = {
     cookie: process.env.TUCHONG_COOKIE,
     "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
@@ -38,6 +39,7 @@ async function main() {
     const result = await res.text()
     const index = result.indexOf('window.nonce =')
     const nonce = result.slice(index + 16, index + 32)
+    logToFeiShu('nonce' + nonce)
     fetch("https://tuchong.com/rest/categories/%E6%9C%80%E6%96%B0/recommend", {
         headers,
         "body": null,
