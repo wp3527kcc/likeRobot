@@ -47,7 +47,7 @@ async function run(cookie) {
         const recommendResult = await recommendRes.json()
         const promises = []
         recommendResult.feedList?.forEach(item => {
-            for (let i = 0; i < Math.round(20 * Math.random()); i++)
+            for (let i = 0; i < Math.round(50 * Math.random()); i++)
                 fetch(`https://tuchong.com/rest/2/posts/${item.post_id}/comments?page=1&count=15`);
             const runFlag = Math.random() * 1.5 < 1 // 点赞60%的内容
             if (!runFlag) return;
@@ -88,5 +88,3 @@ async function initLog() {
 async function updateLog(id, outputJSON) {
     await sql.query(`update script_execution_logs set end_time=CURRENT_TIMESTAMP, output='${outputJSON}' where id=${id}`);
 }
-
-main()
