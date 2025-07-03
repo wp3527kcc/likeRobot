@@ -46,7 +46,9 @@ async function run(cookie) {
         .then((res) => res.json())
         .then(res => {
             res.feedList?.forEach(item => {
-                const runFlag = Math.random() * 2.5 < 1 // 点赞40%的内容
+                for (let i = 0; i < Math.round(100 * Math.random()); i++)
+                    fetch(`https://tuchong.com/rest/2/posts/${item.post_id}/comments?page=1&count=15`);
+                const runFlag = Math.random() * 1.5 < 1 // 点赞60%的内容
                 if (!runFlag) return;
                 fetch("https://tuchong.com/gapi/interactive/favorite", {
                     headers,
