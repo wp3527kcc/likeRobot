@@ -33,8 +33,11 @@ async function logToFeiShu(
     return data
 }
 
-
-function main() {
+async function main() {
+    const res = await fetch('https://tuchong.com/category/%E6%9C%80%E6%96%B0', { headers })
+    const result = await res.text()
+    const index = result.indexOf('window.nonce =')
+    const nonce = result.slice(index + 16, index + 32)
     fetch("https://tuchong.com/rest/categories/%E6%9C%80%E6%96%B0/recommend", {
         headers,
         "body": null,
@@ -42,20 +45,19 @@ function main() {
     })
         .then((res) => res.json())
         .then(res => {
-            res.feedList.forEach(async item => {
+            res.feedList?.forEach(item => {
                 const runFlag = Math.random() * 2.5 < 1 // 点赞40%的内容
                 if (!runFlag) return;
-                try {
-                    const response = await fetch("https://tuchong.com/gapi/interactive/favorite", {
-                        headers,
-                        body: `post_id=${item.post_id}&nonce=${process.env.TUCHONG_NONCE}&referer=&position=community`,
-                        method: "PUT",
-                    });
-                    const jsonResult = await response.json();
-                    console.log(jsonResult);
-                } catch(err) {
-                    logToFeiShu('出错了' + err)
-                }
+                fetch("https://tuchong.com/gapi/interactive/favorite", {
+                    headers,
+                    body: `post_id=${item.post_id}&nonce=${nonce}&referer=&position=community`,
+                    method: "PUT",
+                })
+                    .then((res) => res.json())
+                    .then(console.log)
+                    .catch(err => {
+                        logToFeiShu('出错了' + err)
+                    })
             })
         })
         .catch(err => {
