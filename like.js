@@ -1,7 +1,3 @@
-const headers = {
-    cookie: process.env.TUCHONG_COOKIE,
-    "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-};
 function fetchReq(url, body, method = 'POST') {
     return fetch(url, {
         headers: {
@@ -32,8 +28,11 @@ async function logToFeiShu(
     const data = await res.json();
     return data
 }
-
-async function main() {
+async function run(cookie) {
+    const headers = {
+        cookie,
+        "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+    };
     const res = await fetch('https://tuchong.com/category/%E6%9C%80%E6%96%B0', { headers })
     const result = await res.text()
     const index = result.indexOf('window.nonce =')
@@ -66,4 +65,10 @@ async function main() {
         });
 }
 
+const cookies = process.env.TUCHONG_COOKIES.split(',')
+async function main() {
+    for (const cookie of cookies) {
+        await run(cookie);
+    }
+}
 main()
