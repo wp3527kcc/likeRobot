@@ -1,12 +1,12 @@
 name: Run JavaScript Script
 
 on:
-  push:
-    branches: main
-  pull_request:
-    branches: main
-  schedule:
-    - cron: '*/5 0-12 * * *' # 每天8点到20点之间间隔五分钟执行一次
+  # push:
+  #   branches: main
+  # pull_request:
+  #   branches: main
+  # schedule:
+  #   - cron: '*/5 0-12 * * *' # 每天8点到20点之间间隔五分钟执行一次
   workflow_dispatch:      # 支持手动触发
 
 jobs:

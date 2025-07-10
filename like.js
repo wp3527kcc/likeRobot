@@ -1,4 +1,5 @@
 const { neon } = require('@neondatabase/serverless');
+const cron = require('node-cron');
 require('dotenv').config()
 const sql = neon(`${process.env.REMOTE_URL}`);
 
@@ -60,8 +61,8 @@ async function run(cookie) {
             }))
         })
         const results = await Promise.all(promises)
-        const outputJSON = JSON.stringify(results)
-        updateLog(logId, outputJSON)
+        // const outputJSON = JSON.stringify(results)
+        updateLog(logId, results)
     } catch (err) {
         logToFeiShu('出错了' + err)
     }
@@ -73,9 +74,9 @@ async function main() {
         await run(cookie);
     }
 }
-main()
-
+let count = 0;
 async function initLog() {
+    console.log(++count);
     const result = await sql.query(`
     INSERT INTO script_execution_logs (
         start_time
@@ -85,6 +86,13 @@ async function initLog() {
  `);
     return result[0].id;
 }
-async function updateLog(id, outputJSON) {
-    await sql.query(`update script_execution_logs set end_time=CURRENT_TIMESTAMP, output='${outputJSON}' where id=${id}`);
+async function updateLog(id, output) {
+    await sql.query(`update script_execution_logs set end_time=CURRENT_TIMESTAMP, output='${JSON.stringify(output)}', effect_rows=${output.length} where id=${id}`);
 }
+cron.schedule('*/2 * * * *', () => {
+    setTimeout(() => {
+        console.log(new Date())
+        main();
+    }, Math.random() * 10)
+});
+main()
