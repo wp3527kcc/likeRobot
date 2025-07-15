@@ -33,12 +33,12 @@ async function logToFeiShu(
     const data = await res.json();
     return data
 }
-async function run(cookie) {
+async function run(cookie, userName) {
     const headers = {
         cookie,
         "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
     };
-    const logId = await initLog()
+    const logId = await initLog(userName)
     try {
         const res = await fetch('https://tuchong.com/category/%E6%9C%80%E6%96%B0', { headers })
         const result = await res.text()
@@ -61,27 +61,35 @@ async function run(cookie) {
             }))
         })
         const results = await Promise.all(promises)
-        // const outputJSON = JSON.stringify(results)
         updateLog(logId, results)
     } catch (err) {
         logToFeiShu('出错了' + err)
     }
 }
 
-const cookies = process.env.TUCHONG_COOKIES.split(',')
 async function main() {
-    for (const cookie of cookies) {
-        await run(cookie);
+    const cookies = await sql.query(`select * from tuchong_cookies`)
+    for (const item of cookies) {
+        await run(item.cookie, item.userName);
     }
 }
-let count = 0;
-async function initLog() {
-    console.log(++count);
+const redisUrl = 'https://brief-kid-53738.upstash.io/incr/' + process.env.REDIS_KEY;
+async function initLog(userName) {
+    const rr = await fetch(redisUrl, {
+        headers: {
+            Authorization: `Bearer ${process.env.REDIS_TOKEN}`,
+        }
+    });
+    const { result: count } = await rr.json();
+    if (count % 100 === 99) logToFeiShu(`当前执行次数：${count}`);
+    console.log(`当前执行次数：${count}，执行时间：${new Date()}`);
     const result = await sql.query(`
     INSERT INTO script_execution_logs (
-        start_time
+        start_time,
+        "userName"
     ) VALUES (
-        CURRENT_TIMESTAMP
+        CURRENT_TIMESTAMP,
+        '${userName}'
     ) RETURNING id;
  `);
     return result[0].id;
@@ -91,8 +99,7 @@ async function updateLog(id, output) {
 }
 cron.schedule('*/2 * * * *', () => {
     setTimeout(() => {
-        console.log(new Date())
         main();
-    }, Math.random() * 10)
+    }, Math.random() * 1000)
 });
-main()
+// main()

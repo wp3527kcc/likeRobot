@@ -45,6 +45,5 @@ jobs:
           node-version: '18'
       - name: Run likeRobot script
         env:
-          TUCHONG_COOKIES: ${{ secrets.TUCHONG_COOKIES }}
           REMOTE_URL: ${{ secrets.DATABASE_URL }}
         run: node like.js
