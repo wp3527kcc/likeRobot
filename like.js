@@ -97,7 +97,7 @@ async function initLog(userName) {
 async function updateLog(id, output) {
     await sql.query(`update script_execution_logs set end_time=CURRENT_TIMESTAMP, output='${JSON.stringify(output)}', effect_rows=${output.length} where id=${id}`);
 }
-cron.schedule('*/2 * * * *', () => {
+cron.schedule('*/2 8-21 * * *', () => {
     setTimeout(() => {
         main();
     }, Math.random() * 1000)
